@@ -1033,7 +1033,13 @@ class Trainer:
                     "weight_decay": 0.0,
                 },
             ]
-
+            if is_sagemaker_mp_enabled():
+                opt_grouped_params = []
+                for params in optimizer_grouped_parameters:
+                    if len(params['params']) > 0:
+                        opt_grouped_params.append(params)
+                optimizer_grouped_parameters = opt_grouped_params
+                print(f'opt g params is {optimizer_grouped_parameters}')
             optimizer_cls, optimizer_kwargs = Trainer.get_optimizer_cls_and_kwargs(self.args)
 
             if self.sharded_ddp == ShardedDDPOption.SIMPLE:
