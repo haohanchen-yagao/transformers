@@ -1022,7 +1022,7 @@ class Trainer:
             decay_parameters = get_parameter_names(opt_model, ALL_LAYERNORM_LAYERS)
             print(f'decay param 1 is {decay_parameters}')
             decay_parameters = [name for name in decay_parameters if "bias" not in name]
-            peint(f'decay param 2 is {decay_parameters}')
+            print(f'decay param 2 is {decay_parameters}')
             optimizer_grouped_parameters = [
                 {
                     "params": [p for n, p in opt_model.named_parameters() if n in decay_parameters],
