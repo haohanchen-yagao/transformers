@@ -1039,7 +1039,7 @@ class Trainer:
                     if len(params['params']) > 0:
                         opt_grouped_params.append(params)
                 optimizer_grouped_parameters = opt_grouped_params
-                print(f'opt g params is {}')
+                print(f'opt g params is {optimizer_grouped_parameters}')
             optimizer_cls, optimizer_kwargs = Trainer.get_optimizer_cls_and_kwargs(self.args)
 
             if self.sharded_ddp == ShardedDDPOption.SIMPLE:
@@ -1059,7 +1059,10 @@ class Trainer:
                         if isinstance(module, nn.Embedding):
                             manager.register_module_override(module, "weight", {"optim_bits": 32})
                             logger.debug(f"bitsandbytes: will optimize {module} in fp32")
-        print(f'opt {self.args.local_rank} is {self.optimizer} ')
+                # newopt = optimizer_cls(optimizer_grouped_parameters, **optimizer_kwargs)
+                
+        # print(f'opt {self.args.local_rank} is {self.optimizer} ')
+        
         for i in range(len(self.optimizer.param_groups)):
             print(f"opt {self.args.local_rank} {i} is {len(self.optimizer.param_groups[i]['params'])}")
         if is_sagemaker_mp_enabled():
