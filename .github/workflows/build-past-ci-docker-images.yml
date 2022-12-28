@@ -38,7 +38,7 @@ jobs:
         with:
           context: ./docker/transformers-past-gpu
           build-args: |
-            REF=31d452c68b34c2567b62924ee0df40a83cbc52d5
+            REF=run_past_ci_2nd
             FRAMEWORK=pytorch
             VERSION=${{ matrix.version }}
           push: true
