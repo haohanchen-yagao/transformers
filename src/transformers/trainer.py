@@ -1053,7 +1053,7 @@ class Trainer:
                             logger.debug(f"bitsandbytes: will optimize {module} in fp32")
         print(f'opt {self.args.local_rank} is {self.optimizer} ')
         for i in range(len(self.optimizer.param_groups)):
-            print(f'opt {self.args.local_rank} {i} is {len(self.optimizer.param_groups[i]['params'])} ')
+            print(f"opt {self.args.local_rank} {i} is {len(self.optimizer.param_groups[i]['params'])}")
         if is_sagemaker_mp_enabled():
             self.optimizer = smp.DistributedOptimizer(self.optimizer)
 
