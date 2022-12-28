@@ -998,6 +998,7 @@ class Trainer:
         Trainer's init through `optimizers`, or subclass and override this method (or `create_optimizer` and/or
         `create_scheduler`) in a subclass.
         """
+        print(f'before creation {self.args.local_rank}')
         self.create_optimizer()
         if IS_SAGEMAKER_MP_POST_1_10 and smp.state.cfg.fp16:
             # If smp >= 1.10 and fp16 is enabled, we unwrap the optimizer
@@ -1015,6 +1016,7 @@ class Trainer:
         """
         opt_model = self.model_wrapped if is_sagemaker_mp_enabled() else self.model
 
+        print(f'come creation {self.args.local_rank}')
         if self.optimizer is None:
             decay_parameters = get_parameter_names(opt_model, ALL_LAYERNORM_LAYERS)
             decay_parameters = [name for name in decay_parameters if "bias" not in name]
@@ -1048,7 +1050,8 @@ class Trainer:
                         if isinstance(module, nn.Embedding):
                             manager.register_module_override(module, "weight", {"optim_bits": 32})
                             logger.debug(f"bitsandbytes: will optimize {module} in fp32")
-
+        print(f'opt {self.args.local_rank} is {self.optimizer} ')
+        print(f'opt {self.args.local_rank} is {self.optimize.param_groups} ')
         if is_sagemaker_mp_enabled():
             self.optimizer = smp.DistributedOptimizer(self.optimizer)
 
