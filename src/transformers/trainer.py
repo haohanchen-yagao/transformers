@@ -1018,6 +1018,7 @@ class Trainer:
 
         print(f'come creation {self.args.local_rank}')
         if self.optimizer is None:
+            print(f'param is nonenonenone')
             decay_parameters = get_parameter_names(opt_model, ALL_LAYERNORM_LAYERS)
             decay_parameters = [name for name in decay_parameters if "bias" not in name]
             optimizer_grouped_parameters = [
@@ -1051,7 +1052,8 @@ class Trainer:
                             manager.register_module_override(module, "weight", {"optim_bits": 32})
                             logger.debug(f"bitsandbytes: will optimize {module} in fp32")
         print(f'opt {self.args.local_rank} is {self.optimizer} ')
-        print(f'opt {self.args.local_rank} is {self.optimizer.param_groups} ')
+        for i in range(len(self.optimizer.param_groups)):
+            print(f'opt {self.args.local_rank} {i} is {len(self.optimizer.param_groups[i]['params'])} ')
         if is_sagemaker_mp_enabled():
             self.optimizer = smp.DistributedOptimizer(self.optimizer)
 
