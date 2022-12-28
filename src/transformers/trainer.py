@@ -1020,9 +1020,9 @@ class Trainer:
         if self.optimizer is None:
             print(f'param is nonenonenone')
             decay_parameters = get_parameter_names(opt_model, ALL_LAYERNORM_LAYERS)
-            print(f'decay param 1 is {decay_parameters}')
+            # print(f'decay param 1 is {decay_parameters}')
             decay_parameters = [name for name in decay_parameters if "bias" not in name]
-            print(f'decay param 2 is {decay_parameters}')
+            # print(f'decay param 2 is {decay_parameters}')
             optimizer_grouped_parameters = [
                 {
                     "params": [p for n, p in opt_model.named_parameters() if n in decay_parameters],
@@ -1039,7 +1039,7 @@ class Trainer:
                     if len(params['params']) > 0:
                         opt_grouped_params.append(params)
                 optimizer_grouped_parameters = opt_grouped_params
-                print(f'opt g params is {optimizer_grouped_parameters}')
+                print(f'opt g params is {}')
             optimizer_cls, optimizer_kwargs = Trainer.get_optimizer_cls_and_kwargs(self.args)
 
             if self.sharded_ddp == ShardedDDPOption.SIMPLE:
