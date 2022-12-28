@@ -187,10 +187,12 @@ if is_sagemaker_mp_enabled():
     from smdistributed.modelparallel import __version__ as SMP_VERSION
 
     IS_SAGEMAKER_MP_POST_1_10 = version.parse(SMP_VERSION) >= version.parse("1.10")
+    IS_SAGEMAKER_MP_POST_1_11 = version.parse(SMP_VERSION) >= version.parse("1.11")
 
     from .trainer_pt_utils import smp_forward_backward, smp_forward_only, smp_gather, smp_nested_concat
 else:
     IS_SAGEMAKER_MP_POST_1_10 = False
+    IS_SAGEMAKER_MP_POST_1_11 = False
 
 
 if TYPE_CHECKING:
@@ -1000,7 +1002,7 @@ class Trainer:
         """
         print(f'before creation {self.args.local_rank}')
         self.create_optimizer()
-        if IS_SAGEMAKER_MP_POST_1_10 and smp.state.cfg.fp16:
+        if (IS_SAGEMAKER_MP_POST_1_10 and smp.state.cfg.fp16) or (IS_SAGEMAKER_MP_POST_1_11 and smp.state.cfg.zero2d_enabled()):
             # If smp >= 1.10 and fp16 is enabled, we unwrap the optimizer
             optimizer = self.optimizer.optimizer
         else:
@@ -1039,7 +1041,7 @@ class Trainer:
                     if len(params['params']) > 0:
                         opt_grouped_params.append(params)
                 optimizer_grouped_parameters = opt_grouped_params
-                print(f'opt g params is {optimizer_grouped_parameters}')
+                print(f"opt g params is {[len(x['params']) for x in optimizer_grouped_parameters]}")
             optimizer_cls, optimizer_kwargs = Trainer.get_optimizer_cls_and_kwargs(self.args)
 
             if self.sharded_ddp == ShardedDDPOption.SIMPLE:
@@ -1060,6 +1062,16 @@ class Trainer:
                             manager.register_module_override(module, "weight", {"optim_bits": 32})
                             logger.debug(f"bitsandbytes: will optimize {module} in fp32")
                 # newopt = optimizer_cls(optimizer_grouped_parameters, **optimizer_kwargs)
+                # pgs = []
+                # for pg in newopt.param_groups:
+                #     if len(pg['params']) > 0:
+                #         pgs.append(pg)
+                # newopt.param_group.clear()
+                # for pg in pgs:
+                #     newopt.add_param_group(pg)
+                # if self.args.local_rank == 0:
+                #     print(f'orig is {self.optimizer} and {self.optimizer.param_groups}')
+                #     print(f'new is {newopt} and {newopt.param_groups}')
                 
         # print(f'opt {self.args.local_rank} is {self.optimizer} ')
         
