@@ -1051,7 +1051,7 @@ class Trainer:
                             manager.register_module_override(module, "weight", {"optim_bits": 32})
                             logger.debug(f"bitsandbytes: will optimize {module} in fp32")
         print(f'opt {self.args.local_rank} is {self.optimizer} ')
-        print(f'opt {self.args.local_rank} is {self.optimize.param_groups} ')
+        print(f'opt {self.args.local_rank} is {self.optimizer.param_groups} ')
         if is_sagemaker_mp_enabled():
             self.optimizer = smp.DistributedOptimizer(self.optimizer)
 
